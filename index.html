@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Invitación de cumpleaños</title>
+<style>
+body {
+  background: #fff0f5;
+  text-align: center;
+  font-family: Arial;
+  padding: 30px;
+}
+h1 { color: #e91e63; }
+button {
+  background: #e91e63;
+  color: white;
+  padding: 12px;
+  border: none;
+  margin: 5px;
+  cursor: pointer;
+}
+video { max-width: 100%; }
+</style>
+</head>
+<body>
+
+<h1>TE INVITO A MI FIESTA DE CUMPLEAÑOS</h1>
+<h2>¡Estás cordialmente invitado!</h2>
+
+<p>Escribe tu nombre:</p>
+<input type="text" id="nombre">
+<button onclick="mostrar()">Aceptar</button>
+
+<h2 id="mensaje"></h2>
+
+<p>Demostración de seguridad:</p>
+<p>Puedes activar tu cámara voluntariamente.
+No se guardarán ni enviarán imágenes.</p>
+
+<button onclick="activar()">Permitir cámara</button>
+<button onclick="detener()">Detener cámara</button>
+
+<p id="estado">Cámara desactivada</p>
+<video id="camara" autoplay playsinline muted
+width="350"></video>
+
+<script>
+let stream = null;
+
+function mostrar() {
+  let nombre = document.getElementById("nombre").value;
+  document.getElementById("mensaje").textContent =
+    "¡Bienvenido a mi fiesta, " + nombre + "!";
+}
+
+async function activar() {
+  try {
+    detener();
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: false
+    });
+    document.getElementById("camara").srcObject = stream;
+    document.getElementById("estado").textContent =
+      "Cámara activada con permiso";
+  } catch (error) {
+    document.getElementById("estado").textContent =
+      "No se pudo acceder a la cámara";
+  }
+}
+
+function detener() {
+  if (stream) {
+    stream.getTracks().forEach(track => track.stop());
+    stream = null;
+  }
+  document.getElementById("camara").srcObject = null;
+  document.getElementById("estado").textContent =
+    "Cámara desactivada";
+}
+
+window.addEventListener("pagehide", detener);
+</script>
+
+</body>
+</html>
